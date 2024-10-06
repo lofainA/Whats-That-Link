@@ -63,7 +63,7 @@ function updatePopup(title, summary, url) {
 
         // send message to the background.js to send to the bookmarkScript.js for saving the bookmark
         chrome.runtime.sendMessage({
-            action: 'bookmark',
+            action: 'saveBookmark',
             data: bookmarkData
         });
     };

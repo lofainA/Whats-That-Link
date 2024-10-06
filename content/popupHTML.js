@@ -111,19 +111,23 @@ function createPopup (linkType, isSafe) {
                             animation: spin 1s linear infinite;"></div>
                 <p>Loading summary...</p>
             </div>
-            <button id="bookmarkButton" style="margin-top: 10px; 
-                                                background-color: transparent; 
-                                                border: 1px solid #D24545; 
-                                                color: #D24545;
-                                                padding: 8px 12px; 
-                                                border-radius: 5px; 
-                                                cursor: pointer; 
-                                                width: fit-content; 
-                                                align-self: flex-end;
-                                                font-family: 'Segoe UI';
-                                                font-size: 12px;">
-                Bookmark
-            </button>
+            <div id="bm-btn-div" style="width: fit-content; 
+                                        align-self: flex-start;
+                                        display: flex;
+                                        justify-content: space-between;
+                                        margin-top: 10px;
+                                        align-items: center;">
+                <button id="bookmarkButton" style=" background-color: transparent; 
+                                                    border: 1px solid #D24545; 
+                                                    color: #D24545;
+                                                    padding: 8px 12px; 
+                                                    border-radius: 5px; 
+                                                    cursor: pointer; 
+                                                    font-family: 'Segoe UI';
+                                                    font-size: 12px;">
+                    Bookmark
+                </button>
+            </div>
             <button id="showBookmarks" style="border: none;
                                               background-color: transparent;
                                               padding: 8px 12px; 
@@ -240,20 +244,7 @@ function displayBookmarks(flag) {
                 const deleteBookmark = bookmarkCell.querySelector('.delete-bookmark');
                 deleteBookmark.addEventListener('click', () => {
                     bookmarkCell.style.display = 'none';
-
-                    chrome.storage.local.get(['bookmarks'], (result) => {
-                        let newBookmarks = result.bookmarks || [];
-                    
-                        const bookmarkIdToRemove = bookmark.id;
-                    
-                        // Filter out the bookmark with the given id
-                        newBookmarks = newBookmarks.filter(bookmark => bookmark.id !== bookmarkIdToRemove);
-                    
-                        // Set the updated bookmarks array back to storage
-                        chrome.storage.local.set({ bookmarks: newBookmarks }, () => {
-                            console.log('Bookmark removed and storage updated.');
-                        });
-                    });
+                    chrome.runtime.sendMessage({action: "deleteBookmark", id: bookmark.id});
                 });
                 //console.log(`Title: ${bookmark.title}, URL: ${bookmark.url}, Summary: ${bookmark.summary}`);
             });

@@ -187,8 +187,11 @@ async function checkLinkSafety(linkUrl) {
     }
 }
 
+// Communication between content scripts 
+// Actions: 6, 7, 4, 8
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'bookmark') {
+    if (message.action === 'saveBookmark') {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
                 sendResponse(response);
@@ -207,6 +210,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     if(message.action == 'createPopup') {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
+                sendResponse(response);
+            });
+        });
+        return true;
+    }
+
+    if(message.action == 'deleteBookmark') {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
                 sendResponse(response);
