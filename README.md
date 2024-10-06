@@ -27,7 +27,7 @@
 
 ## To-do :
 
-- [ ] bookmark contains the url of the website the link was bookmarked in no the bookmarked websites link, change asap.
+- [x] bookmark contains the url of the website the link was bookmarked in no the bookmarked websites link, change asap.
     `popupScript.js -> bookmarkHandler() `
 - [ ] show some sort of verification when the bookmark is saved.
 - [ ] Move remove bookmark function to bookmarkScript.js from popupHTML.

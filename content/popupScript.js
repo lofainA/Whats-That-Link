@@ -18,7 +18,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     else if (message.action === 'updatePopup') {
         const summary = message.summaryText;
         const title = message.title;
-        updatePopup(title, summary);
+        const url = message.url
+        updatePopup(title, summary, url);
     }
 
 });
@@ -32,7 +33,7 @@ function injectScript(url, callback) {
 
 let bookmarkHandler = null;
 
-function updatePopup(title, summary) {
+function updatePopup(title, summary, url) {
     // console.log("Entered update popup function:" + title);
 
     const titleDiv = document.getElementById('popup-title');
@@ -57,7 +58,7 @@ function updatePopup(title, summary) {
             id: Date.now(),
             title: title,
             summary: summary,
-            url: window.location.href
+            url: url
         };
 
         // send message to the background.js to send to the bookmarkScript.js for saving the bookmark

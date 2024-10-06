@@ -31,6 +31,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                 action: 'summarizeText', 
                 text: visibleText, 
                 title: pageTitle, 
+                url: message.plainUrl,
                 linkType: message.linkType,
             });
 

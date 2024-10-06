@@ -77,7 +77,7 @@ async function sendProxiedLink(info, tab, linkType) {
 
     try {
         //sends the URL to the contentScript
-        chrome.tabs.sendMessage(tab.id, { action: 'fetchAndParse', url: proxiedUrl, linkType: linkType });
+        chrome.tabs.sendMessage(tab.id, { action: 'fetchAndParse', url: proxiedUrl, linkType: linkType, plainUrl: linkUrl });
         console.log("Sent message to parser script");
     } catch (error) {
         console.error('Error sending URL to content script:', error);
@@ -122,7 +122,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             if(data.candidates[0].content) {
                 const summary = data.candidates[0].content.parts[0].text;
     
-                chrome.tabs.sendMessage(sender.tab.id, { action: 'updatePopup', summaryText: summary, title: message.title });
+                chrome.tabs.sendMessage(sender.tab.id, { action: 'updatePopup', summaryText: summary, title: message.title, url: message.url });
             } 
             
             else {
