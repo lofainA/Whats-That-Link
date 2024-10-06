@@ -4,7 +4,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         bookmarkLink(message.data);
         sendResponse({ status: 'success' });
     }
-
     if(message.action === "deleteBookmark") {
         deleteBookmarkFunction(message);
     }
@@ -12,7 +11,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // This function handles bookmarking the summary and link.
 function bookmarkLink(bookmarkData) {
-
     if (!bookmarkData) {
         console.error("Bookmark data is undefined.");
         return;
@@ -47,7 +45,6 @@ function bookmarkLink(bookmarkData) {
                 `;
                 console.log('Bookmark saved:', bookmarkData);
             }
-
             const parent = document.getElementById("bm-btn-div");
             parent.appendChild(saveStatus);
         });
@@ -66,7 +63,6 @@ const deleteBookmarkFunction = (message) => {
     // Delete Bookmark
     chrome.storage.local.get(['bookmarks'], (result) => {
         let newBookmarks = result.bookmarks || [];
-    
         const bookmarkIdToRemove = message.id;
     
         // Filter out the bookmark with the given id
@@ -78,5 +74,3 @@ const deleteBookmarkFunction = (message) => {
         });
     });
 }
-
-

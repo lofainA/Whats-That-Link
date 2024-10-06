@@ -1,5 +1,4 @@
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-
     if (message.action === 'fetchAndParse') {
         console.log("Entered Parser script");
         const linkUrl = message.url;
@@ -8,10 +7,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         try {
             // fetch the HTML content of the URL
             const response = await fetch(linkUrl);
-
-            if (!response.ok) {
+            if (!response.ok)
                 throw new Error(`HTTP error! Status: ${response.status}`);
-            }
 
             const html = await response.text();
 
@@ -19,12 +16,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
 
-
             let pageTitle = doc.querySelector('title').innerText;
             const visibleText = extractVisibleText(doc);  // extract only the texts from the body
-
-            console.log("Page Title: " + pageTitle);
-            // console.log("Page Text: " + visibleText);
 
             // send the text to the background for summarization
             chrome.runtime.sendMessage({
@@ -37,7 +30,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
         } catch (error) {
             console.error('Error fetching or parsing HTML:', error);
-
             // Send a default response in case of an error
             chrome.runtime.sendMessage({ action: 'summarizeText', text: "We've run into an error while fetching your content, could you please try again? ", title: "We're sorry :(", linkType: message.linkType });
         }

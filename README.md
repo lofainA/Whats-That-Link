@@ -45,18 +45,15 @@
 `background --> urlRatings`
     - report
 
-
-
 ## To-do :
 
 - [x] bookmark contains the url of the website the link was bookmarked in no the bookmarked websites link, change asap.
-    `popupScript.js -> bookmarkHandler() `
+    `popupScript.js -> bookmarkHandler()`
 - [x] show some sort of verification when the bookmark is saved.
 - [x] Move remove bookmark function to bookmarkScript.js from popupHTML.
 - [ ] ~~prompt for deleting bookmark~~
-- [ ] add website ratings using virustotal api
-- [ ] document better if possible
+- [x] add website ratings using virustotal api
+- [x] document better if possible
 - [x] clear all local storage button
 - [ ] exception handling
-- [ ] ~~handle download links (optional)~~
 - [x] already saved bookmark exception

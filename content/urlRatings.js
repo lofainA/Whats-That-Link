@@ -21,9 +21,8 @@ const calculateRating = (report) => {
     // Total votes
     const totalVotes = maliciousVotes + suspiciousVotes + undetectedVotes + harmlessVotes;
 
-    if (totalVotes === 0) {
+    if (totalVotes === 0)
         return "No data available for rating";
-    }
 
     // Weighted score calculation
     const maliciousWeight = 0;
@@ -72,8 +71,7 @@ const updateRating = (rating) => {
             width: fit-content;
             font-family: 'Segoe UI';">
                 ${rating}
-        </span>
-    `
+        </span>`
     tagDiv.appendChild(ratingTag);
     if(document.getElementById('rating')) {
         console.log("Successfully updated rating");

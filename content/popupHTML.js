@@ -1,9 +1,10 @@
+// Listening for messages during runtime
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => { 
     if(message.action == 'createPopup') {
         createPopup(message.data.linkType, message.data.isSafe, message.rating);
         sendResponse({ status: 'success' });
     }
-
+    
     if(message.action == 'displayBookmarks') {
         displayBookmarks(message.flag);
         sendResponse({ status: 'success' });
@@ -11,7 +12,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 function createPopup (linkType, isSafe) {
-
     // Check if a popup already exists and remove it if so
     const existingPopup = document.getElementById("popupContainer");
     if (existingPopup) {
@@ -25,22 +25,22 @@ function createPopup (linkType, isSafe) {
 
     if(linkType === 'internal') {
         linkTypeText = 'Internal';
-        linkTypeColor = '#00A8FF'; //blue
+        linkTypeColor = '#00A8FF'; // blue
     } else if (linkType === 'external') {
         linkTypeText ='External';
-        linkTypeColor = '#FBC531'; //yellow
+        linkTypeColor = '#FBC531'; // yellow
     } else if (linkType === 'download') {
         linkTypeText = 'Download';
-        linkTypeColor = '#9C88FF'; //lavender
+        linkTypeColor = '#9C88FF'; // lavender
     } 
 
-    // for the favicon icon of close button
+    // Font awesome icons linking
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
     document.head.appendChild(link);
 
-    // html for the popup element
+    // HTML for the popup element
     const popup = document.createElement("div");
     popup.id = "popupContainer";
     popup.style.fontFamily = "'Segoe UI', 'lato, 'Helvetica, sans-serif"
@@ -60,7 +60,6 @@ function createPopup (linkType, isSafe) {
     popup.style.lineHeight = "1.4";
     popup.style.textAlign = "left";
     popup.style.maxHeight = "650px";
-
     popup.innerHTML = `
         <body>
             <button id="closeButton" 
@@ -142,9 +141,9 @@ function createPopup (linkType, isSafe) {
             </button>
         </body>
     `; 
-  
     document.body.appendChild(popup);
 
+    // Close button fucntionality for the popup
     const closeButton = document.getElementById("closeButton");
     if (closeButton) {
         closeButton.addEventListener("click", () => {
@@ -152,23 +151,21 @@ function createPopup (linkType, isSafe) {
         });
     }
 
+    // Hover effect for bookmark button
     const bookmarkButton = document.getElementById('bookmarkButton');
-
     bookmarkButton.addEventListener('mouseenter', () => {
         bookmarkButton.style.backgroundColor = '#D24545';
         bookmarkButton.style.color = 'white';
     });
-
     bookmarkButton.addEventListener('mouseleave', () => {
         bookmarkButton.style.backgroundColor = 'transparent';
         bookmarkButton.style.color = '#D24545';
     });
 
     const showBookmarksButton = document.getElementById('showBookmarks');
-
-    let flag = false;
-
-    // send call to background.js for showing the bookmarks dropdown list
+    let flag = false; // indicates if the bookmark drawer is opened or closed
+    
+    // Send call to background.js for showing the bookmarks dropdown list
     showBookmarksButton.addEventListener('click', () => {
         flag = !flag;
         chrome.runtime.sendMessage({
@@ -177,6 +174,7 @@ function createPopup (linkType, isSafe) {
         }) 
     });
 
+    // Button to clear chrome local storage for developement purposes
     const clearStorage = document.getElementById('clear-strg');
     clearStorage.addEventListener('click', () => {
         chrome.storage.local.clear(() => {
@@ -189,24 +187,20 @@ function createPopup (linkType, isSafe) {
     });
 }
 
+// Function to display the bookmarks saved in your local storage
 function displayBookmarks(flag) {
     if(flag === true) {
-
         const showIcon = document.getElementById('showIcon');
         showIcon.className = 'fa-solid fa-sort-up';
 
         const bookmarkList = document.createElement('div');
-
         const popupSummary = document.getElementById('popup-summary');
         const bookmarkButton = document.getElementById('bookmarkButton');
         popupSummary.style.display = "none";
         bookmarkButton.style.display = "none";
-        // var popupHeight = document.getElementById('popupContainer').clientHeight;
         bookmarkList.style.overflowY = "scroll";
-        // bookmarkList.style.height = `${650 - popupHeight}px`;
         bookmarkList.id = "bookmarkList";
         
-
         chrome.storage.local.get({ bookmarks: [] }, (result) => {
             const bookmarks = result.bookmarks;
             bookmarks.forEach(bookmark => {
@@ -243,13 +237,11 @@ function displayBookmarks(flag) {
                 bookmarkList.appendChild(bookmarkCell);
    
                 let sumFlag = false;
-
                 const toggleButton = bookmarkCell.querySelector('.toggle-summary');
                 const summaryDiv = bookmarkCell.querySelector('.bm-summary');
 
                 toggleButton.addEventListener('click', () => {
                     sumFlag = !sumFlag;
-
                     if(sumFlag) {
                         summaryDiv.style.display = "inline-block";
                     }
@@ -263,22 +255,13 @@ function displayBookmarks(flag) {
                     bookmarkCell.style.display = 'none';
                     chrome.runtime.sendMessage({action: "deleteBookmark", id: bookmark.id});
                 });
-                //console.log(`Title: ${bookmark.title}, URL: ${bookmark.url}, Summary: ${bookmark.summary}`);
             });
         });
-
         const popup = document.getElementById('popupContainer');
         popup.appendChild(bookmarkList);
-
-        // const summaryButton = document.getElementById('bm-summary');
-
-        // if(summaryButton) {
-
-        // }
     }
 
     else if (flag === false) {
-
         const popupSummary = document.getElementById('popup-summary');
         const bookmarkButton = document.getElementById('bookmarkButton');
         popupSummary.style.display = "inline-block";
