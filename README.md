@@ -41,16 +41,22 @@
 `popupHTML --> background --> bookmarkScript`
     - id (bookmark's)
 
+9. **updateRating**
+`background --> urlRatings`
+    - report
+
 
 
 ## To-do :
 
 - [x] bookmark contains the url of the website the link was bookmarked in no the bookmarked websites link, change asap.
     `popupScript.js -> bookmarkHandler() `
-- [ ] show some sort of verification when the bookmark is saved.
-- [ ] Move remove bookmark function to bookmarkScript.js from popupHTML.
+- [x] show some sort of verification when the bookmark is saved.
+- [x] Move remove bookmark function to bookmarkScript.js from popupHTML.
+- [ ] ~~prompt for deleting bookmark~~
 - [ ] add website ratings using virustotal api
 - [ ] document better if possible
-- [ ] clear all local storage button
+- [x] clear all local storage button
 - [ ] exception handling
-
+- [ ] ~~handle download links (optional)~~
+- [x] already saved bookmark exception

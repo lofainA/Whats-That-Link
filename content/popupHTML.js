@@ -1,6 +1,6 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => { 
     if(message.action == 'createPopup') {
-        createPopup(message.data.linkType, message.data.isSafe);
+        createPopup(message.data.linkType, message.data.isSafe, message.rating);
         sendResponse({ status: 'success' });
     }
 
@@ -73,7 +73,7 @@ function createPopup (linkType, isSafe) {
                     cursor: pointer;">
                 <i class="fas fa-times"></i>
             </button>
-            <div style="display: flex; align-items: flex-start; gap: 7px">
+            <div id="tags-div" style="display: flex; align-items: flex-start; gap: 7px">
                 <span style="
                     font-size: 12px; 
                     padding: 3px 7px; 
@@ -111,10 +111,8 @@ function createPopup (linkType, isSafe) {
                             animation: spin 1s linear infinite;"></div>
                 <p>Loading summary...</p>
             </div>
-            <div id="bm-btn-div" style="width: fit-content; 
-                                        align-self: flex-start;
-                                        display: flex;
-                                        justify-content: space-between;
+            <div id="bm-btn-div" style="display: flex;
+                                        gap: 10px;
                                         margin-top: 10px;
                                         align-items: center;">
                 <button id="bookmarkButton" style=" background-color: transparent; 
@@ -127,6 +125,14 @@ function createPopup (linkType, isSafe) {
                                                     font-size: 12px;">
                     Bookmark
                 </button>
+                <button id="clear-strg" style="border: 1px solid black; 
+                                               background-color: black; 
+                                               color: white;
+                                               border-radius: 5px;
+                                               padding: 8px 12px;
+                                               cursor: pointer; 
+                                               font-family: 'Segoe UI';
+                                               font-size: 12px;">Clear</button>
             </div>
             <button id="showBookmarks" style="border: none;
                                               background-color: transparent;
@@ -168,7 +174,18 @@ function createPopup (linkType, isSafe) {
         chrome.runtime.sendMessage({
             action: 'displayBookmarks',
             flag: flag
-        })
+        }) 
+    });
+
+    const clearStorage = document.getElementById('clear-strg');
+    clearStorage.addEventListener('click', () => {
+        chrome.storage.local.clear(() => {
+            var error = chrome.runtime.lastError;
+            if (error) {
+                console.error(error);
+            }
+        });
+        chrome.storage.sync.clear(); 
     });
 }
 
@@ -224,7 +241,7 @@ function displayBookmarks(flag) {
                     <hr style="color: #CACACA; width: 100%; border-top: 1px solid #CACACA; margin-top: 5px;">
                 `;
                 bookmarkList.appendChild(bookmarkCell);
-
+   
                 let sumFlag = false;
 
                 const toggleButton = bookmarkCell.querySelector('.toggle-summary');

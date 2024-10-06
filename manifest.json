@@ -38,7 +38,8 @@
                 "content/parserScript.js",
                 "content/popupScript.js",
                 "content/bookmarkScript.js",
-                "content/popupHTML.js"
+                "content/popupHTML.js",
+                "content/urlRatings.js"
             ]
         }
     ],

@@ -10,16 +10,6 @@ chrome.contextMenus.create({
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     if (info.menuItemId === 'summarizeLink') {
 
-        // Uncomment and use context menu to clear local storage
-
-        // chrome.storage.local.clear(function() {
-        //     var error = chrome.runtime.lastError;
-        //     if (error) {
-        //         console.error(error);
-        //     }
-        // });
-        // chrome.storage.sync.clear(); 
-
         const linkUrl = info.linkUrl;
         const currentDomain = new URL(tab.url).hostname;
 
@@ -29,7 +19,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         const isSafe = await checkLinkSafety(linkUrl);
         console.log('Link safety:', isSafe ? 'Safe' : 'Unsafe');
 
-        chrome.tabs.sendMessage(tab.id, {action: 'displayPopup', linkType: linkType[0], isSafe: isSafe}) // (tab, action)
+        chrome.tabs.sendMessage(tab.id, {action: 'displayPopup', linkType: linkType[0], isSafe: isSafe}) 
 
         if (linkType[0] === 'internal' || linkType[0] === 'external') {
             sendProxiedLink(info, tab, linkType, isSafe);
@@ -39,6 +29,9 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         else if (linkType[0] === 'download') {
             fileExtension = linkType[1];
         }
+
+        const rating = await getUrlRatings(linkUrl, tab);
+        console.log(rating);
     }
 });
 
@@ -84,6 +77,7 @@ async function sendProxiedLink(info, tab, linkType) {
     }
 }
 
+// Gemini API comms
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyA5h89GaEy6DlnEV0s_fsBQXvKN4wKxzaM';
 
@@ -146,7 +140,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
 });
 
-async function checkLinkSafety(linkUrl) {
+// Safe browsing API comms
+const checkLinkSafety = async (linkUrl) => {
     const safeBrowsingAPI = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyCczjH1d70T3uCAjvmCOCxVV8o5TdAkeOw`;
 
     const body = {
@@ -185,6 +180,73 @@ async function checkLinkSafety(linkUrl) {
         console.error('Error checking link safety:', error);
         return false;  // Assume unsafe if error occurs
     }
+}
+
+// virusTotal api key
+const apiKey = 'ff01f664ef0ae500365ab56607ecde80d505cf09c2089f54a9554916004c446e';
+
+// Main function to scan and get the report
+async function getUrlRatings(linkUrl, tab) {
+    try {
+        const analysisId = await submitURLForScan(linkUrl);
+        
+        setTimeout(async () => {
+            const result = await getAnalysisResult(analysisId);
+            console.log("Analysis report:", result);
+
+            chrome.tabs.sendMessage(tab.id, {action: 'updateRating', report: result}, (response)=> {
+                if(chrome.runtime.lastError) {
+                    console.error("Error:", chrome.runtime.lastError);
+                }
+                else {
+                    if(response.status === 'success') {
+                        console.log("Rating updated successfully!");
+                    } else {
+                        console.log("Failed to update rating.");
+                    }
+                }
+            });
+        }, 20000);  
+        
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}
+
+// Function to submit the URL for scanning
+async function submitURLForScan(url) {
+    const urlEncoded = encodeURIComponent(url);
+
+    const response = await fetch('https://www.virustotal.com/api/v3/urls', {
+        method: 'POST',
+        headers: {
+            'x-apikey': apiKey,
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `url=${urlEncoded}`
+    });
+
+    const data = await response.json();
+    const analysisId = data.data.id;
+    
+    console.log("Analysis ID:", analysisId);
+    return analysisId;
+}
+
+// Function to poll for the analysis result using the ID
+async function getAnalysisResult(analysisId) {
+    const url = `https://www.virustotal.com/api/v3/analyses/${analysisId}`;
+    
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'x-apikey': apiKey
+        }
+    });
+
+    const result = await response.json();
+    console.log("Analysis report in getAnalysisResult: " , result)
+    return result;
 }
 
 // Communication between content scripts 

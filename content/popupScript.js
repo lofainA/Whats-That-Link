@@ -1,8 +1,7 @@
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     if (message.action == 'displayPopup') {
-        const summary  = message.summaryText;
-        const title = message.title;
+
         const isSafe = message.isSafe;
         console.log("Content script: received summary");
         
@@ -10,7 +9,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             action: 'createPopup',
             data: {
                 linkType: message.linkType,
-                isSafe: isSafe
+                isSafe: isSafe,
             }
         });
     } 
@@ -66,6 +65,8 @@ function updatePopup(title, summary, url) {
             action: 'saveBookmark',
             data: bookmarkData
         });
+
+        bookmarkButton.disabled = true;
     };
 
     bookmarkButton.addEventListener("click", bookmarkHandler);
