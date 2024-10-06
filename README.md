@@ -1,15 +1,37 @@
-# chromeGPT
-A chrome extension that uses GPT3 to summarize highlighted text.
+## Actions tracking :
 
-### Install & Use:
+1. **displayPopup**   
+`background --> popupScript`
 
-1. Clone this repo into a local folder
-2. Edit the `background.js` file and add your `OpenAI API Key` on line #10: `"Authorization: `Bearer..."`. Save.
-2. Go to: `chrome://extensions`
-3. Make sure `"Developer mode"` is enabled
-4. `"Load unpacked"`, select the local folder
-5. Go to any page, highlight text, right-click, `"Summarize"`.
+2. **fetchAndParse** 
+`background --> parserScript`
 
-### Showcase
+3. **summarizeText** 
+`parserScript --> background`
 
-https://user-images.githubusercontent.com/17044663/210149050-56db6f7b-b1ed-4162-be4c-76e38a023194.mp4
+4. **createPopup** 
+`popupScript --> background --> popupHTML`
+
+5. **updatePopup** 
+`background --> popupScript`
+
+6. **bookmark** 
+`popupScript --> background --> bookmarkScript`
+
+7. **displayBookmarks** 
+`popupHTML --> background --> popupHTML`
+
+
+
+
+
+## To-do :
+
+- [ ] bookmark contains the url of the website the link was bookmarked in no the bookmarked websites link, change asap.
+    `popupScript.js -> bookmarkHandler() `
+- [ ] show some sort of verification when the bookmark is saved.
+- [ ] Move remove bookmark function to bookmarkScript.js from popupHTML.
+- [ ] add website ratings using virustotal api
+- [ ] document better if possible
+- [ ] clear all local storage button
+
